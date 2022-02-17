@@ -5,23 +5,42 @@ type Query {
   posts: [Post]
 }
 
+type Mutation {
+  "Create user"
+  createUser(input: UserInput!): User
+  "Create post"
+  createPost(input: PostInput!): Post
+}
+
+input UserInput {
+  email: String!
+  username: String!
+  password: String!
+}
+
 type User {
-  id: Int
+  id: ID
   email: String
   username: String
   password: String
   posts: [Post]
 }
 
+input PostInput {
+  body: String!
+  userId: ID!
+}
+
 type Post {
-  id: Int
+  id: ID
   body: String
   comments: [Comment]
   user: User
 }
 
 type Comment {
-  id: Int
+  id: ID
   post: Post
   comment: String
+  user: User
 }

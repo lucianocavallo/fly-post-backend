@@ -15,18 +15,22 @@ model User {
   email       String      @unique
   username    String
   password    String
+  posts       Post[]      @relation("WrittenPosts")
+  likedPosts  Post[]      @relation("LikedPosts")
+  comments    Comment[]
   createdAt   DateTime    @default(now())
-  posts       Post[]
 }
 
 model Post {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime?   @updatedAt
-  body        String      @db.VarChar(255)
-  comments    Comment[]
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+  body          String      @db.VarChar(255)
+  comments      Comment[]
+  user          User        @relation(name: "WrittenPosts", fields: [userId], references: [id])
+  userId        Int
+  usersLikes    User[]      @relation(name: "LikedPosts", fields: [usersLikesId], references: [id])
+  usersLikesId  Int[]
 }
 
 model Comment {
@@ -34,4 +38,6 @@ model Comment {
   post        Post        @relation(fields: [postId], references: [id])
   postId      Int
   comment     String
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int
 }
