@@ -1,10 +1,27 @@
 type Query {
   "Get all users"
   users: [User]
+  "Get all posts"
+  posts: [Post]
 }
 
 type User {
-  id: String
+  id: Int
   email: String
   username: String
+  password: String
+  posts: [Post]
+}
+
+type Post {
+  id: Int
+  body: String
+  comments: [Comment]
+  user: User
+}
+
+type Comment {
+  id: Int
+  post: Post
+  comment: String
 }

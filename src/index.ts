@@ -4,24 +4,12 @@ import express from 'express';
 import http from 'http';
 import { join } from 'path';
 import { readFileSync } from 'fs';
+import { PrismaClient } from '@prisma/client';
 
+import { resolvers } from './resolvers';
 const typeDefs = readFileSync(join(__dirname, 'schema.graphql'), 'utf-8');
 
-const users = [
-  {
-    id: 1,
-    email: 'luciano@mail.com',
-    username: 'luciano',
-  },
-];
-
-const resolvers = {
-  Query: {
-    users: () => {
-      return users;
-    },
-  },
-};
+const orm = new PrismaClient();
 
 (async function () {
   const app = express();
@@ -30,6 +18,9 @@ const resolvers = {
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    context: {
+      orm,
+    },
   });
   await server.start();
   server.applyMiddleware({ app, path: '/graphql' });
