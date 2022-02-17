@@ -1,45 +1,22 @@
-import type { PrismaClient, User } from '@prisma/client';
-
-type ResolverContext = {
-  orm: PrismaClient;
-};
+import * as userResolver from './user.resolver';
+import * as postResolver from './post.resolver';
+import * as commentResolver from './comment.resolver';
 
 export const resolvers = {
   Query: {
-    users: async (parent: unknown, args: unknown, { orm }: ResolverContext) => {
-      return await orm.user.findMany({
-        include: {
-          posts: true,
-        },
-      });
-    },
-    posts: async (parent: unknown, args: unknown, { orm }: ResolverContext) => {
-      return await orm.post.findMany({
-        include: {
-          user: true,
-        },
-      });
-    },
+    users: userResolver.findAll,
+    user: userResolver.findOne,
+    posts: postResolver.findAll,
+    post: postResolver.findOne,
   },
   Mutation: {
-    createUser: async (
-      parent: unknown,
-      { input }: { input: User },
-      { orm }: ResolverContext
-    ) => {
-      return await orm.user.create({ data: input });
-    },
-    createPost: async (
-      parent: unknown,
-      { input }: { input: { body: string; userId: string } },
-      { orm }: ResolverContext
-    ) => {
-      return await orm.post.create({
-        data: {
-          body: input.body,
-          userId: parseInt(input.userId),
-        },
-      });
-    },
+    createUser: userResolver.create,
+    removeUser: userResolver.remove,
+    updateUser: userResolver.update,
+    createPost: postResolver.create,
+    updatePost: postResolver.update,
+    removePost: postResolver.remove,
+    createComment: commentResolver.create,
+    removeComment: commentResolver.remove,
   },
 };

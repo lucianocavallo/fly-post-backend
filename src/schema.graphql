@@ -1,15 +1,31 @@
 type Query {
   "Get all users"
   users: [User]
+  "Get user by id or email"
+  user(id: ID, email: String): User
   "Get all posts"
-  posts: [Post]
+  posts(userId: ID): [Post]
+  "Get post by id"
+  post(id: ID!): Post
 }
 
 type Mutation {
   "Create user"
   createUser(input: UserInput!): User
+  "Update user"
+  updateUser(id: ID!, input: UserUpdateInput!): User
+  "Remove user"
+  removeUser(id: ID!): User
   "Create post"
   createPost(input: PostInput!): Post
+  "Update post"
+  updatePost(id: ID!, input: PostUpdateInput!): Post
+  "Remove post"
+  removePost(id: ID!): Post
+  "Create comment"
+  createComment(input: CommentInput!): Comment
+  "Remove comment"
+  removeComment(id: ID!): Comment
 }
 
 input UserInput {
@@ -18,12 +34,22 @@ input UserInput {
   password: String!
 }
 
+input UserUpdateInput {
+  email: String
+  username: String
+  password: String
+}
+
 type User {
   id: ID
   email: String
   username: String
   password: String
   posts: [Post]
+}
+
+input PostUpdateInput {
+  body: String!
 }
 
 input PostInput {
@@ -36,6 +62,13 @@ type Post {
   body: String
   comments: [Comment]
   user: User
+  usersLikes: [User]
+}
+
+input CommentInput {
+  postId: ID
+  userId: ID
+  comment: String
 }
 
 type Comment {
