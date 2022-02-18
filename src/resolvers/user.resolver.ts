@@ -1,4 +1,5 @@
 import type { PrismaClient, User } from '@prisma/client';
+import { hash } from 'bcrypt';
 
 type ResolverContext = {
   orm: PrismaClient;
@@ -9,7 +10,16 @@ export async function create(
   { input }: { input: User },
   { orm }: ResolverContext
 ) {
-  return await orm.user.create({ data: input });
+  const { username, email, password } = input;
+  const hashedPasswd = await hash(password, 10);
+
+  return await orm.user.create({
+    data: {
+      username,
+      email,
+      password: hashedPasswd,
+    },
+  });
 }
 
 export async function findAll(
