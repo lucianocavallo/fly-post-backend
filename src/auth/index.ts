@@ -1,30 +1,69 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, RequestHandler, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import { config } from '../config';
+
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+    }
+    interface Request {
+      user?: Express.User;
+    }
+  }
+}
 
 const orm = new PrismaClient();
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
+  try {
+    const user = await orm.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
-  const user = await orm.user.findUnique({
-    where: {
-      email,
-    },
-  });
+    if (!user) throw new Error('unauthorized');
 
-  if (!user) {
-    res.status(401).json({ message: "There's no user with that email" });
-  }
+    const isMatch = await compare(password, user?.password as string);
 
-  const isMatch = await compare(password, user?.password as string);
+    if (!isMatch) throw new Error('unauthorized');
 
-  if (!isMatch) {
-    res.status(401).json({ message: 'unauthorized' });
-  } else {
     const token = sign({ sub: user?.id }, config.jwtSecret);
     res.status(200).json({ token, id: user?.id, username: user?.username });
+  } catch (error) {
+    next(error);
   }
 };
+
+export const verifyToken = async (req: Request) => {
+  const { authorization } = req.headers;
+  const token = (authorization || '').replace('Bearer ', '');
+
+  try {
+    const verified = verify(token, config.jwtSecret);
+    return verified;
+  } catch (error) {
+    throw new Error('unauthorized');
+  }
+};
+
+const authMiddleware: RequestHandler = async (req, res, next) => {
+  try {
+    const payload = await verifyToken(req);
+    req.user = { id: payload.sub as string };
+  } catch (error) {
+    // next(error);
+  } finally {
+    next();
+  }
+};
+
+export default authMiddleware;

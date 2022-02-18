@@ -1,14 +1,17 @@
-import type { Post, PrismaClient } from '@prisma/client';
+import type { Post, PrismaClient, User } from '@prisma/client';
 
 type ResolverContext = {
   orm: PrismaClient;
+  user: User;
 };
 
 export async function create(
   parent: unknown,
   { input }: { input: { body: string; userId: string } },
-  { orm }: ResolverContext
+  { orm, user }: ResolverContext
 ) {
+  console.log('user id', user.id);
+
   return await orm.post.create({
     data: {
       body: input.body,
