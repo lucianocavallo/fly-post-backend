@@ -17,7 +17,7 @@ type Mutation {
   "Remove user"
   removeUser(id: ID!): User
   "Create post"
-  createPost(input: PostInput!): Post
+  createPost(body: String!, userId: ID!): Post
   "Update post"
   updatePost(id: ID!, input: PostUpdateInput!): Post
   "Toggle post like"

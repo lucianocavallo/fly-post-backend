@@ -7,15 +7,15 @@ type ResolverContext = {
 
 export async function create(
   parent: unknown,
-  { input }: { input: { body: string; userId: string } },
+  { body, userId }: { body: string; userId: string },
   { orm, user }: ResolverContext
 ) {
   console.log('user id', user.id);
 
   return await orm.post.create({
     data: {
-      body: input.body,
-      userId: parseInt(input.userId),
+      body: body,
+      userId: parseInt(userId),
     },
   });
 }
