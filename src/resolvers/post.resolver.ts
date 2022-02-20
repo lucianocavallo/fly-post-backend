@@ -7,7 +7,7 @@ type ResolverContext = {
 
 export async function create(
   parent: unknown,
-  { body, userId }: { body: string; userId: string },
+  { body }: { body: string },
   { orm, user }: ResolverContext
 ) {
   console.log('user id', user.id);
@@ -15,7 +15,16 @@ export async function create(
   return await orm.post.create({
     data: {
       body: body,
-      userId: parseInt(userId),
+      userId: user.id,
+    },
+    include: {
+      user: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
+      usersLikes: true,
     },
   });
 }
@@ -70,7 +79,6 @@ export async function findAll(
       usersLikes: true,
     },
   });
-  console.log(posts);
   return posts;
 }
 
@@ -156,6 +164,11 @@ export async function remove(
   { id }: { id: string },
   { orm }: ResolverContext
 ) {
+  await orm.comment.deleteMany({
+    where: {
+      postId: parseInt(id),
+    },
+  });
   return await orm.post.delete({
     where: { id: parseInt(id) },
   });

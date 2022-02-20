@@ -23,6 +23,8 @@ export const login = async (
   next: NextFunction
 ) => {
   const { email, password } = req.body;
+  console.log({ email, password });
+
   try {
     const user = await orm.user.findUnique({
       where: {

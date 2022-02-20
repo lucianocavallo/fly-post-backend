@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(auth);
-app.use('/api/login', login);
+app.post('/api/login', login);
 // app.use('/test', (req, res, next) => {
 //   try {
 //     // @ts-ignore

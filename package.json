@@ -1,5 +1,5 @@
 {
-  "name": "micro-twitter-backend",
+  "name": "fly-post-backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
