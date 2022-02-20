@@ -15,6 +15,7 @@ export const resolvers = {
     updateUser: userResolver.update,
     createPost: postResolver.create,
     updatePost: postResolver.update,
+    togglePostLike: postResolver.togglePostLike,
     removePost: postResolver.remove,
     createComment: commentResolver.create,
     removeComment: commentResolver.remove,

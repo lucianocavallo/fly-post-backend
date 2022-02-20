@@ -58,7 +58,7 @@ export async function findAll(
     });
   }
 
-  return await orm.post.findMany({
+  const posts = await orm.post.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
       user: true,
@@ -70,6 +70,8 @@ export async function findAll(
       usersLikes: true,
     },
   });
+  console.log(posts);
+  return posts;
 }
 
 export async function findOne(
@@ -77,7 +79,7 @@ export async function findOne(
   { id }: { id: string },
   { orm }: ResolverContext
 ) {
-  return await orm.post.findUnique({
+  const post = await orm.post.findUnique({
     where: { id: parseInt(id) },
     include: {
       user: true,
@@ -89,6 +91,51 @@ export async function findOne(
       usersLikes: true,
     },
   });
+  console.log('post: ', post);
+  return post;
+}
+
+export async function togglePostLike(
+  parent: unknown,
+  { postId, userId }: { postId: string; userId: string },
+  { orm }: ResolverContext
+) {
+  const postIdInt = parseInt(postId);
+  const userIdInt = parseInt(userId);
+
+  const post = await orm.post.findUnique({
+    where: {
+      id: postIdInt,
+    },
+    include: {
+      user: true,
+      usersLikes: true,
+    },
+  });
+
+  if (post?.usersLikes.some((user) => user.id === userIdInt)) {
+    return await orm.post.update({
+      where: { id: postIdInt },
+      data: {
+        usersLikes: { disconnect: { id: userIdInt } },
+      },
+      include: {
+        usersLikes: true,
+        user: true,
+      },
+    });
+  } else {
+    return await orm.post.update({
+      where: { id: postIdInt },
+      data: {
+        usersLikes: { connect: { id: userIdInt } },
+      },
+      include: {
+        usersLikes: true,
+        user: true,
+      },
+    });
+  }
 }
 
 export async function update(

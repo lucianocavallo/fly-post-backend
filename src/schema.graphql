@@ -20,6 +20,8 @@ type Mutation {
   createPost(input: PostInput!): Post
   "Update post"
   updatePost(id: ID!, input: PostUpdateInput!): Post
+  "Toggle post like"
+  togglePostLike(postId: ID!, userId: ID!): Post
   "Remove post"
   removePost(id: ID!): Post
   "Create comment"
