@@ -5,6 +5,8 @@ type Query {
   user(id: ID, email: String): User
   "Get all posts"
   posts(userId: ID, limit: String, offset: String): [Post]
+  "Get all posts by user id"
+  postsById(userId: ID): [Post]
   "Get post by id"
   post(id: ID!): Post
 }

@@ -31,7 +31,7 @@ export async function create(
 
 export async function findAll(
   parent: unknown,
-  { userId, limit, offset }: { userId: string; limit: string; offset: string },
+  { limit, offset }: { userId: string; limit: string; offset: string },
   { orm }: ResolverContext
 ) {
   if (limit && offset) {
@@ -39,22 +39,6 @@ export async function findAll(
       orderBy: { createdAt: 'desc' },
       take: parseInt(limit),
       skip: parseInt(offset),
-      include: {
-        user: true,
-        comments: {
-          include: {
-            user: true,
-          },
-        },
-        usersLikes: true,
-      },
-    });
-  }
-
-  if (userId) {
-    return await orm.post.findMany({
-      orderBy: { createdAt: 'desc' },
-      where: { userId: parseInt(userId) },
       include: {
         user: true,
         comments: {
@@ -80,6 +64,26 @@ export async function findAll(
     },
   });
   return posts;
+}
+
+export async function findByUser(
+  parent: unknown,
+  { userId }: { userId: string },
+  { orm }: ResolverContext
+) {
+  return await orm.post.findMany({
+    orderBy: { createdAt: 'desc' },
+    where: { userId: parseInt(userId) },
+    include: {
+      user: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
+      usersLikes: true,
+    },
+  });
 }
 
 export async function findOne(

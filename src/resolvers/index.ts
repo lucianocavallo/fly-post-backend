@@ -7,6 +7,7 @@ export const resolvers = {
     users: userResolver.findAll,
     user: userResolver.findOne,
     posts: postResolver.findAll,
+    postsById: postResolver.findByUser,
     post: postResolver.findOne,
   },
   Mutation: {
